@@ -5,26 +5,26 @@ import Card from './Card';
 
 function Main(props) {
 
+  /** Хуки для изменения информации о профиле */
   const [userName, setUserName] = React.useState();
   const [userDescription, setUserDescription] = React.useState();
   const [userAvatar, setUserAvatar] = React.useState();
+  /** Хук для массива карточек с сервера */
   const [cards, setCards] = React.useState([]);
 
+
+  /** Хук эффектов с изменением данных о профиле и загрузкой изображений */
   React.useEffect(() => {
-    api.getProfile()
-      .then((res) => {
-        setUserName(res.name);
-        setUserDescription(res.about);
-        setUserAvatar(res.avatar);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    api.getInitialCards()
-      .then((res) => { setCards(res) })
-      .catch((err) => {
-        console.log(err);
-      });
+    Promise.all([api.getProfile(), api.getInitialCards()])
+    .then(([profileInfo, cardList]) => {
+      setUserName(profileInfo.name);
+      setUserDescription(profileInfo.about);
+      setUserAvatar(profileInfo.avatar);
+      setCards(cardList);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
   })
 
 
@@ -42,10 +42,11 @@ function Main(props) {
         </div>
         <button type="button" className="profile__button-add" aria-label="Добавить" onClick={props.onAddPlace}></button>
       </section>
+
       <section className="elements" aria-label="Галерея мест">
         <ul className="elements__list">
           {cards.map((card) => {
-            return <Card card={card} />
+            return <Card card={card} onCardClick={props.onCardClick} key={card._id}/>
           })}
         </ul>
       </section>
