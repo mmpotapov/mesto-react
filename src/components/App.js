@@ -1,20 +1,18 @@
-import React from 'react';
+import {useState} from "react";
 import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
 import PopupWithForm from './PopupWithForm';
 import ImagePopup from './ImagePopup';
 
-
 function App() {
   /** Хуки для изменения состояние попапов (открыт/не открыт) */
-  const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
-  const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
-  const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
-  const [isOpenImagePopupOpen, setIsOpenImagePopupOpen] = React.useState(false);
+  const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
+  const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
+  const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
+  const [isOpenImagePopupOpen, setIsOpenImagePopupOpen] = useState(false);
   /** Хук для объекта карточки */
-  const [selectedCard, setSelectedCard] = React.useState({});
-
+  const [selectedCard, setSelectedCard] = useState({});
 
   /** Открыть попап изменения профиля (изменить переменную состояния на true) */
   const handleEditProfileClick = () => {
@@ -45,20 +43,15 @@ function App() {
     setIsOpenImagePopupOpen(false);
   }
 
-
   return (
     <div className="root__container">
-
       <Header />
-
       <Main
         onEditProfile={handleEditProfileClick}
         onEditAvatar={handleEditAvatarClick}
         onAddPlace={handleAddPlaceClick}
         onCardClick={handleCardClick} />
-
       <Footer />
-
       <PopupWithForm
         title="Редактировать профиль"
         name="profile"
@@ -72,7 +65,6 @@ function App() {
           placeholder="О себе" id="profession-input" required minLength="2" maxLength="200" />
         <span className="popup__error profession-input-error"></span>
       </PopupWithForm>
-
       <PopupWithForm
         title="Новое место"
         name="card"
@@ -86,7 +78,6 @@ function App() {
           id="link-input" placeholder="Ссылка на изображение" />
         <span className="popup__error link-input-error"></span>
       </PopupWithForm>
-
       <PopupWithForm
         title="Обновить аватар"
         name="avatar"
@@ -97,17 +88,14 @@ function App() {
           placeholder="Ссылка" id="avatar-input" />
         <span className="popup__error avatar-input-error"></span>
       </PopupWithForm>
-
       <PopupWithForm
         title="Вы уверены?"
         name="delete"
         submitButton="Да" />
-
       <ImagePopup
         isOpen={isOpenImagePopupOpen}
         onClose={closeAllPopups}
         card={selectedCard} />
-
     </div>
   )
 }

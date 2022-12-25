@@ -1,20 +1,18 @@
-import React from 'react';
-import { api } from '../utils/Api.js'
+import {useEffect, useState} from 'react';
+import {api} from '../utils/Api.js'
 import Card from './Card';
-
 
 function Main(props) {
 
   /** Хуки для изменения информации о профиле */
-  const [userName, setUserName] = React.useState();
-  const [userDescription, setUserDescription] = React.useState();
-  const [userAvatar, setUserAvatar] = React.useState();
+  const [userName, setUserName] = useState('');
+  const [userDescription, setUserDescription] = useState('');
+  const [userAvatar, setUserAvatar] = useState('');
   /** Хук для массива карточек с сервера */
-  const [cards, setCards] = React.useState([]);
-
+  const [cards, setCards] = useState([]);
 
   /** Хук эффектов с изменением данных о профиле и загрузкой изображений */
-  React.useEffect(() => {
+  useEffect(() => {
     Promise.all([api.getProfile(), api.getInitialCards()])
     .then(([profileInfo, cardList]) => {
       setUserName(profileInfo.name);
@@ -25,8 +23,7 @@ function Main(props) {
     .catch((err) => {
       console.log(err);
     });
-  })
-
+  }, [])
 
   return (
     <main className="content">
@@ -42,7 +39,6 @@ function Main(props) {
         </div>
         <button type="button" className="profile__button-add" aria-label="Добавить" onClick={props.onAddPlace}></button>
       </section>
-
       <section className="elements" aria-label="Галерея мест">
         <ul className="elements__list">
           {cards.map((card) => {
@@ -50,7 +46,6 @@ function Main(props) {
           })}
         </ul>
       </section>
-
     </main>
   )
 }
