@@ -1,40 +1,25 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useContext} from 'react';
 import {api} from '../utils/Api.js'
 import Card from './Card';
+import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
 
 function Main(props) {
 
-  /** Хуки для изменения информации о профиле */
-  const [userName, setUserName] = useState('');
-  const [userDescription, setUserDescription] = useState('');
-  const [userAvatar, setUserAvatar] = useState('');
+  const currentUser = useContext(CurrentUserContext);
   /** Хук для массива карточек с сервера */
   const [cards, setCards] = useState([]);
 
-  /** Хук эффектов с изменением данных о профиле и загрузкой изображений */
-  useEffect(() => {
-    Promise.all([api.getProfile(), api.getInitialCards()])
-    .then(([profileInfo, cardList]) => {
-      setUserName(profileInfo.name);
-      setUserDescription(profileInfo.about);
-      setUserAvatar(profileInfo.avatar);
-      setCards(cardList);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-  }, [])
 
   return (
     <main className="content">
       <section className="profile" aria-label="Профиль">
         <div className="profile__account">
-          <img className="profile__avatar" src={userAvatar} alt="Фото профиля" />
+          <img className="profile__avatar" src={currentUser.avatar} alt="Фото профиля" />
           <button className="profile__avatar-edit" aria-label="Изменить фото" onClick={props.onEditAvatar}></button>
           <div className="profile__info">
-            <h1 className="profile__name">{userName}</h1>
+            <h1 className="profile__name">{currentUser.name}</h1>
             <button type="button" className="profile__edit" aria-label="Редактировать" onClick={props.onEditProfile}></button>
-            <p className="profile__profession">{userDescription}</p>
+            <p className="profile__profession">{currentUser.about}</p>
           </div>
         </div>
         <button type="button" className="profile__button-add" aria-label="Добавить" onClick={props.onAddPlace}></button>
