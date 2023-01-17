@@ -6,9 +6,6 @@ import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
 function Main(props) {
 
   const currentUser = useContext(CurrentUserContext);
-  /** Хук для массива карточек с сервера */
-  const [cards, setCards] = useState([]);
-
 
   return (
     <main className="content">
@@ -26,7 +23,7 @@ function Main(props) {
       </section>
       <section className="elements" aria-label="Галерея мест">
         <ul className="elements__list">
-          {cards.map((card) => {
+          {props.cards.map((card) => {
             return <Card card={card} onCardClick={props.onCardClick} key={card._id}/>
           })}
         </ul>

@@ -49,6 +49,8 @@ function App() {
 
 
   const [currentUser, setCurrentUser] = useState({});
+  const [cards, setCards] = useState([]);
+
 
 
   /** Хук эффектов с изменением данных о профиле и загрузкой изображений */
@@ -56,27 +58,12 @@ function App() {
     Promise.all([api.getProfile(), api.getInitialCards()])
       .then(([profileInfo, cardList]) => {
         setCurrentUser(profileInfo);
+        setCards(cardList);
       })
       .catch((err) => {
         console.log(err);
       });
   }, [])
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -89,7 +76,8 @@ function App() {
           onEditProfile={handleEditProfileClick}
           onEditAvatar={handleEditAvatarClick}
           onAddPlace={handleAddPlaceClick}
-          onCardClick={handleCardClick} />
+          onCardClick={handleCardClick}
+          cards={cards}/>
         <Footer />
         <PopupWithForm
           title="Редактировать профиль"
