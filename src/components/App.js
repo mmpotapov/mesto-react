@@ -37,7 +37,7 @@ function App() {
     setSelectedCard(cardObject);
   }
 
-  /** Закрыть любой попап (изменить переменную состояния попапа на false)*/
+  /** Закрыть любой попап (изменить переменную состояния попапа на false) */
   const closeAllPopups = () => {
     setIsEditProfilePopupOpen(false);
     setIsEditAvatarPopupOpen(false);
@@ -48,12 +48,13 @@ function App() {
 
 
 
+
+
+  /** Стейты для данных о профиле и списка карточек */
   const [currentUser, setCurrentUser] = useState({});
   const [cards, setCards] = useState([]);
 
-
-
-  /** Хук эффектов с изменением данных о профиле и загрузкой изображений */
+  /** Хук эффектов с запросом данных о профиле и массива карточек */
   useEffect(() => {
     Promise.all([api.getProfile(), api.getInitialCards()])
       .then(([profileInfo, cardList]) => {
@@ -65,8 +66,35 @@ function App() {
       });
   }, [])
 
-
-
+  /** Функция-реакция нажатия на лайк */
+  function handleCardLike(card) {
+    /** Буль: среди людей, поставивших лайк, есть текущий пользователь? */
+    const isLiked = card.likes.some((i) => i._id === currentUser._id);
+    /** Если лайка не было, то отправь на сервер запрос на его проставление */
+    if (!isLiked) {
+      api.addLike(card._id)
+        .then((updatedCard) => {
+          setCards((cardList) =>
+            /** Проверка, с какой карточкой из списка мы взаимодействовали; какую подменить и отдать setCards видоизменённый массив*/
+            cardList.map((c) => (c._id === card._id ? updatedCard : c))
+          );
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      /** Если лайка был, то отправь на сервер запрос на его удаление */
+    } else {
+      api.deleteLike(card._id)
+        .then((updatedCard) => {
+          setCards((cardList) =>
+            cardList.map((c) => (c._id === card._id ? updatedCard : c))
+          );
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
@@ -77,7 +105,8 @@ function App() {
           onEditAvatar={handleEditAvatarClick}
           onAddPlace={handleAddPlaceClick}
           onCardClick={handleCardClick}
-          cards={cards}/>
+          onCardLike={handleCardLike}
+          cards={cards} />
         <Footer />
         <PopupWithForm
           title="Редактировать профиль"

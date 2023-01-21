@@ -5,6 +5,7 @@ import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
 
 function Main(props) {
 
+  /** Подписка на контекст с информацией о текущем пользователе с сервера */
   const currentUser = useContext(CurrentUserContext);
 
   return (
@@ -23,8 +24,9 @@ function Main(props) {
       </section>
       <section className="elements" aria-label="Галерея мест">
         <ul className="elements__list">
+          {/*  */}
           {props.cards.map((card) => {
-            return <Card card={card} onCardClick={props.onCardClick} key={card._id}/>
+            return <Card card={card} onCardClick={props.onCardClick} key={card._id} onCardLike={props.onCardLike} />
           })}
         </ul>
       </section>
