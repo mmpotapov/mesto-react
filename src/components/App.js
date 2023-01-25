@@ -8,6 +8,7 @@ import PopupWithForm from './PopupWithForm';
 import ImagePopup from './ImagePopup';
 import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
+import AddPlacePopup from './AddPlacePopup';
 
 function App() {
 
@@ -16,8 +17,6 @@ function App() {
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
   const [isOpenImagePopupOpen, setIsOpenImagePopupOpen] = useState(false);
-  /** Хук для объекта карточки */
-  const [selectedCard, setSelectedCard] = useState({});
 
   /** Открыть попап изменения профиля (изменить переменную состояния на true) */
   const handleEditProfileClick = () => {
@@ -34,6 +33,9 @@ function App() {
     setIsAddPlacePopupOpen(true);
   }
 
+  /** Хук для хранения выбранной карточки */
+  const [selectedCard, setSelectedCard] = useState({});
+
   /** Открыть попап картинки + изменить объект карточки */
   const handleCardClick = (cardObject) => {
     setIsOpenImagePopupOpen(true);
@@ -48,15 +50,11 @@ function App() {
     setIsOpenImagePopupOpen(false);
   }
 
-
-
-
-
   /** Стейты для данных о профиле и списка карточек */
   const [currentUser, setCurrentUser] = useState({});
   const [cards, setCards] = useState([]);
 
-  /** Хук эффектов с запросом данных о профиле и массива карточек */
+  /** Хук эффектов с первичным запросом данных о профиле и массива карточек */
   useEffect(() => {
     Promise.all([api.getProfile(), api.getInitialCards()])
       .then(([profileInfo, cardList]) => {
@@ -84,7 +82,7 @@ function App() {
         .catch((err) => {
           console.log(err);
         });
-      /** Если лайка был, то отправь на сервер запрос на его удаление */
+      /** Если лайк был, то отправь на сервер запрос на его удаление */
     } else {
       api.deleteLike(card._id)
         .then((updatedCard) => {
@@ -124,7 +122,7 @@ function App() {
       .catch((err) => {
         console.log(err);
       })
-      /** Закрыть попап с изменением инфо */
+      /** Закрыть попап-форму изменения профиля */
       .finally(() => {
         closeAllPopups();
       });;
@@ -140,7 +138,23 @@ function App() {
       .catch((err) => {
         console.log(err);
       })
-      /** Закрыть попап с изменением аватара */
+      /** Закрыть попап-форму изменения аватара */
+      .finally(() => {
+        closeAllPopups();
+      });;
+  }
+
+  /** Функция-реакция на submit формы для добавления новой карточки */
+  function handleAddPlaceSubmit(inputs) {
+    api.addCard(inputs.name, inputs.link)
+      /** Добавление новой карточки в начало к текущим */
+      .then((newCard) => {
+        setCards([newCard, ...cards]);
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      /** Закрыть попап-форму добавления карточки */
       .finally(() => {
         closeAllPopups();
       });;
@@ -170,28 +184,20 @@ function App() {
           isOpen={isEditAvatarPopupOpen}
           onClose={closeAllPopups}
           onUpdateAvatar={handleUpdateAvatar} />
-        <PopupWithForm
-          title="Новое место"
-          name="card"
-          submitButton="Создать"
+        <AddPlacePopup
           isOpen={isAddPlacePopupOpen}
-          onClose={closeAllPopups}>
-          <input type="text" name="place" className="popup__input popup__input_value_place" required
-            placeholder="Название" id="place-input" minLength="2" maxLength="20" />
-          <span className="popup__error place-input-error"></span>
-          <input type="url" name="link" className="popup__input popup__input_value_link" required
-            id="link-input" placeholder="Ссылка на изображение" />
-          <span className="popup__error link-input-error"></span>
-        </PopupWithForm>
+          onClose={closeAllPopups}
+          onAddPlace={handleAddPlaceSubmit} />
+        <ImagePopup
+          isOpen={isOpenImagePopupOpen}
+          onClose={closeAllPopups}
+          card={selectedCard} />
 
         <PopupWithForm
           title="Вы уверены?"
           name="delete"
           submitButton="Да" />
-        <ImagePopup
-          isOpen={isOpenImagePopupOpen}
-          onClose={closeAllPopups}
-          card={selectedCard} />
+
       </div>
     </CurrentUserContext.Provider>
   )
