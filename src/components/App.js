@@ -4,6 +4,7 @@ import Main from './Main';
 import Footer from './Footer';
 import PopupWithForm from './PopupWithForm';
 import ImagePopup from './ImagePopup';
+import EditProfilePopup from './EditProfilePopup';
 import { api } from '../utils/Api.js';
 import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
 
@@ -111,6 +112,22 @@ function App() {
       });
   }
 
+  /** Функция-реакция на submit формы редактирования профиля*/
+  function handleUpdateUser(inputs) {
+    /** Отправь на сервер новую информацию о юзере */
+    api.editProfile(inputs.name, inputs.about)
+      .then((res) => {
+        /** Изменить контекст текущего пользователя */
+        setCurrentUser(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      /** Закрыть попап с изменением инфо */
+      .finally(() => {
+        closeAllPopups();
+      });;
+  }
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
@@ -125,19 +142,12 @@ function App() {
           onCardDelete={handleCardDelete}
           cards={cards} />
         <Footer />
-        <PopupWithForm
-          title="Редактировать профиль"
-          name="profile"
-          submitButton="Сохранить"
+
+        <EditProfilePopup
           isOpen={isEditProfilePopupOpen}
-          onClose={closeAllPopups}>
-          <input type="text" name="name" className="popup__input popup__input_value_name" id="name-input" required
-            placeholder="Имя" minLength="2" maxLength="40" />
-          <span className="popup__error name-input-error"></span>
-          <input type="text" name="profession" className="popup__input popup__input_value_profession"
-            placeholder="О себе" id="profession-input" required minLength="2" maxLength="200" />
-          <span className="popup__error profession-input-error"></span>
-        </PopupWithForm>
+          onClose={closeAllPopups}
+          onUpdateUser={handleUpdateUser} />
+
         <PopupWithForm
           title="Новое место"
           name="card"
