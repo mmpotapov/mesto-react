@@ -96,6 +96,22 @@ function App() {
     }
   }
 
+  /** Функция-реакция нажатия на корзину */
+  function handleCardDelete(card) {
+    /** Отправь на сервер запрос на удаление этой карточки */
+    api.deleteCard(card._id)
+      /** Перерисовка: отфильтровать карточку, с которой взаимодействовали*/
+      .then(() => {
+        const newCards = cards.filter((c) =>
+          c._id === card._id ? '' : c)
+        setCards(newCards);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="root__container">
@@ -106,6 +122,7 @@ function App() {
           onAddPlace={handleAddPlaceClick}
           onCardClick={handleCardClick}
           onCardLike={handleCardLike}
+          onCardDelete={handleCardDelete}
           cards={cards} />
         <Footer />
         <PopupWithForm

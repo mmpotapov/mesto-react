@@ -24,9 +24,8 @@ function Main(props) {
       </section>
       <section className="elements" aria-label="Галерея мест">
         <ul className="elements__list">
-          {/*  */}
           {props.cards.map((card) => {
-            return <Card card={card} onCardClick={props.onCardClick} key={card._id} onCardLike={props.onCardLike} />
+            return <Card card={card} onCardClick={props.onCardClick} key={card._id} onCardLike={props.onCardLike} onCardDelete={props.onCardDelete}/>
           })}
         </ul>
       </section>
