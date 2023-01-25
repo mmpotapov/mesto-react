@@ -2,8 +2,6 @@ import { useEffect, useState, useContext } from 'react';
 import PopupWithForm from './PopupWithForm';
 import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
 
-
-
 function EditProfilePopup(props) {
 
   /** Управляемый компонент для полей ввода */
@@ -11,18 +9,18 @@ function EditProfilePopup(props) {
   const [description, setDescription] = useState('');
 
   /** Функции для onChange при вводе */
-  function handleChangeName(e) {
-    setName(e.target.value);
+  function handleChangeName(evt) {
+    setName(evt.target.value);
   }
 
-  function handleChangeDescription(e) {
-    setDescription(e.target.value);
+  function handleChangeDescription(evt) {
+    setDescription(evt.target.value);
   }
 
   /** Подписка на контекст с текущими именем и описанием аккаунта */
   const currentUser = useContext(CurrentUserContext);
 
-  /** Первично при загрузке сразу же установить значения для name и description */
+  /** Первично при открытии сразу же установить значения в поля */
   useEffect(() => {
     if (props.isOpen) {
       setName(currentUser.name);

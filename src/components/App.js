@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react';
+import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
+import { api } from '../utils/Api.js';
 import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
 import PopupWithForm from './PopupWithForm';
 import ImagePopup from './ImagePopup';
 import EditProfilePopup from './EditProfilePopup';
-import { api } from '../utils/Api.js';
-import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
+import EditAvatarPopup from './EditAvatarPopup';
 
 function App() {
+
   /** Хуки для изменения состояние попапов (открыт/не открыт) */
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
@@ -45,7 +47,6 @@ function App() {
     setIsAddPlacePopupOpen(false);
     setIsOpenImagePopupOpen(false);
   }
-
 
 
 
@@ -112,7 +113,7 @@ function App() {
       });
   }
 
-  /** Функция-реакция на submit формы редактирования профиля*/
+  /** Функция-реакция на submit формы редактирования профиля */
   function handleUpdateUser(inputs) {
     /** Отправь на сервер новую информацию о юзере */
     api.editProfile(inputs.name, inputs.about)
@@ -129,9 +130,26 @@ function App() {
       });;
   }
 
+  /** Функция-реакция на submit формы обновления аватара */
+  function handleUpdateAvatar(link) {
+    api.editAvatar(link)
+      .then((res) => {
+        /** Изменить контекст текущего пользователя */
+        setCurrentUser(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      /** Закрыть попап с изменением аватара */
+      .finally(() => {
+        closeAllPopups();
+      });;
+  }
+
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="root__container">
+        {/** Главная страница */}
         <Header />
         <Main
           onEditProfile={handleEditProfileClick}
@@ -143,11 +161,15 @@ function App() {
           cards={cards} />
         <Footer />
 
+        {/** Попапы */}
         <EditProfilePopup
           isOpen={isEditProfilePopupOpen}
           onClose={closeAllPopups}
           onUpdateUser={handleUpdateUser} />
-
+        <EditAvatarPopup
+          isOpen={isEditAvatarPopupOpen}
+          onClose={closeAllPopups}
+          onUpdateAvatar={handleUpdateAvatar} />
         <PopupWithForm
           title="Новое место"
           name="card"
@@ -161,16 +183,7 @@ function App() {
             id="link-input" placeholder="Ссылка на изображение" />
           <span className="popup__error link-input-error"></span>
         </PopupWithForm>
-        <PopupWithForm
-          title="Обновить аватар"
-          name="avatar"
-          submitButton="Сохранить"
-          isOpen={isEditAvatarPopupOpen}
-          onClose={closeAllPopups}>
-          <input type="url" name="avatar" className="popup__input popup__input_value_avatar" required
-            placeholder="Ссылка" id="avatar-input" />
-          <span className="popup__error avatar-input-error"></span>
-        </PopupWithForm>
+
         <PopupWithForm
           title="Вы уверены?"
           name="delete"
