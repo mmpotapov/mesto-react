@@ -9,6 +9,8 @@ import ImagePopup from './ImagePopup';
 import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
+import DeletionPopup from './DeletionPopup';
+
 
 function App() {
 
@@ -17,6 +19,8 @@ function App() {
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
   const [isOpenImagePopupOpen, setIsOpenImagePopupOpen] = useState(false);
+  const [isConfirmCardDeletionOpen, setIsConfirmCardDeletionOpen] = useState(false);
+
 
   /** Открыть попап изменения профиля (изменить переменную состояния на true) */
   const handleEditProfileClick = () => {
@@ -36,7 +40,13 @@ function App() {
   /** Хук для хранения выбранной карточки */
   const [selectedCard, setSelectedCard] = useState({});
 
-  /** Открыть попап картинки + изменить объект карточки */
+  /** Открыть попап с подтверждением удаления + изменить объект текущей карточки */
+  const handleDeletionCardClick = (cardObject) => {
+    setIsConfirmCardDeletionOpen(true);
+    setSelectedCard(cardObject);
+  }
+
+  /** Открыть попап картинки + изменить объект текущей карточки */
   const handleCardClick = (cardObject) => {
     setIsOpenImagePopupOpen(true);
     setSelectedCard(cardObject);
@@ -48,6 +58,7 @@ function App() {
     setIsEditAvatarPopupOpen(false);
     setIsAddPlacePopupOpen(false);
     setIsOpenImagePopupOpen(false);
+    setIsConfirmCardDeletionOpen(false);
   }
 
   /** Стейты для данных о профиле и списка карточек */
@@ -108,7 +119,11 @@ function App() {
       })
       .catch((err) => {
         console.log(err);
-      });
+      })
+      /** Закрыть попап-форму подтверждения удаления */
+      .finally(() => {
+        closeAllPopups();
+      });;
   }
 
   /** Функция-реакция на submit формы редактирования профиля */
@@ -171,7 +186,7 @@ function App() {
           onAddPlace={handleAddPlaceClick}
           onCardClick={handleCardClick}
           onCardLike={handleCardLike}
-          onCardDelete={handleCardDelete}
+          onCardDelete={handleDeletionCardClick}
           cards={cards} />
         <Footer />
 
@@ -192,11 +207,11 @@ function App() {
           isOpen={isOpenImagePopupOpen}
           onClose={closeAllPopups}
           card={selectedCard} />
-
-        <PopupWithForm
-          title="Вы уверены?"
-          name="delete"
-          submitButton="Да" />
+        <DeletionPopup
+          isOpen={isConfirmCardDeletionOpen}
+          onClose={closeAllPopups}
+          onConfirmDeletion={handleCardDelete}
+          card={selectedCard} />
 
       </div>
     </CurrentUserContext.Provider>

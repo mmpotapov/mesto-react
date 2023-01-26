@@ -1,4 +1,4 @@
-import {useContext} from 'react';
+import { useContext } from 'react';
 import Card from './Card';
 import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
 
@@ -24,7 +24,12 @@ function Main(props) {
       <section className="elements" aria-label="Галерея мест">
         <ul className="elements__list">
           {props.cards.map((card) => {
-            return <Card card={card} onCardClick={props.onCardClick} key={card._id} onCardLike={props.onCardLike} onCardDelete={props.onCardDelete}/>
+            return <Card
+              card={card}
+              onCardClick={props.onCardClick}
+              key={card._id}
+              onCardLike={props.onCardLike}
+              onCardDelete={props.onCardDelete} />
           })}
         </ul>
       </section>
