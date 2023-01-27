@@ -10,7 +10,6 @@ import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
 import DeletionPopup from './DeletionPopup';
 
-
 function App() {
 
   /** Хуки для изменения состояние попапов (открыт/не открыт) */
@@ -19,7 +18,9 @@ function App() {
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
   const [isOpenImagePopupOpen, setIsOpenImagePopupOpen] = useState(false);
   const [isConfirmCardDeletionOpen, setIsConfirmCardDeletionOpen] = useState(false);
-
+  /** Стейты для данных о профиле и списка карточек */
+  const [currentUser, setCurrentUser] = useState({});
+  const [cards, setCards] = useState([]);
 
   /** Открыть попап изменения профиля (изменить переменную состояния на true) */
   const handleEditProfileClick = () => {
@@ -59,10 +60,6 @@ function App() {
     setIsOpenImagePopupOpen(false);
     setIsConfirmCardDeletionOpen(false);
   }
-
-  /** Стейты для данных о профиле и списка карточек */
-  const [currentUser, setCurrentUser] = useState({});
-  const [cards, setCards] = useState([]);
 
   /** Хук эффектов с первичным запросом данных о профиле и массива карточек */
   useEffect(() => {
@@ -115,14 +112,12 @@ function App() {
         const newCards = cards.filter((c) =>
           c._id === card._id ? '' : c)
         setCards(newCards);
+        /** Закрыть попап-форму подтверждения удаления */
+        closeAllPopups();
       })
       .catch((err) => {
         console.log(err);
       })
-      /** Закрыть попап-форму подтверждения удаления */
-      .finally(() => {
-        closeAllPopups();
-      });;
   }
 
   /** Функция-реакция на submit формы редактирования профиля */
@@ -132,14 +127,12 @@ function App() {
       .then((res) => {
         /** Изменить контекст текущего пользователя */
         setCurrentUser(res);
+        /** Закрыть попап-форму изменения профиля */
+        closeAllPopups();
       })
       .catch((err) => {
         console.log(err);
       })
-      /** Закрыть попап-форму изменения профиля */
-      .finally(() => {
-        closeAllPopups();
-      });;
   }
 
   /** Функция-реакция на submit формы обновления аватара */
@@ -148,14 +141,12 @@ function App() {
       .then((res) => {
         /** Изменить контекст текущего пользователя */
         setCurrentUser(res);
+        /** Закрыть попап-форму изменения аватара */
+        closeAllPopups();
       })
       .catch((err) => {
         console.log(err);
       })
-      /** Закрыть попап-форму изменения аватара */
-      .finally(() => {
-        closeAllPopups();
-      });;
   }
 
   /** Функция-реакция на submit формы для добавления новой карточки */
@@ -164,14 +155,12 @@ function App() {
       /** Добавление новой карточки в начало к текущим */
       .then((newCard) => {
         setCards([newCard, ...cards]);
+        /** Закрыть попап-форму добавления карточки */
+        closeAllPopups();
       })
       .catch((err) => {
         console.log(err);
       })
-      /** Закрыть попап-форму добавления карточки */
-      .finally(() => {
-        closeAllPopups();
-      });;
   }
 
   return (
